@@ -1836,6 +1836,13 @@ function generateShape(type) {
             y = Math.sin(t * 5 + v * 10) * 3;
             tempColor.setHSL(0.5, 1, 0.6);
         }
+        else {
+            // Fallback for missing/unknown shapes (e.g. Pyramid, Omega, etc.)
+            // Default to a colored Sphere so it's visible
+            const p = getSpherePoint(u, v, 12);
+            x = p.x; y = p.y; z = p.z;
+            tempColor.setHSL(Math.random(), 0.7, 0.5);
+        }
 
 
         targetPositions[i * 3] = x;
@@ -1924,6 +1931,16 @@ function populateSidebar() {
         item.onclick = () => {
             window.currentSet = key;
             toggleSet(true); // pass flag to skip next toggle logic but update UI
+
+            // Force First Shape
+            if (data.shapes && data.shapes.length > 0) {
+                const firstShape = data.shapes[0].toLowerCase();
+                console.log("Navbar switching to first shape:", firstShape);
+                generateShape(firstShape);
+                try {
+                    if (typeof currentShape !== 'undefined') currentShape = firstShape;
+                } catch (e) { }
+            }
         };
 
         const header = document.createElement('div');
