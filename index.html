@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>QuantumTouch</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div id="loading">Initializing AI & GPU...</div>
+
+    <div id="ui">
+      <h1>QuantumTouch</h1>
+      <div id="set-indicator" style="font-weight:bold; color:#0f0; margin-bottom:5px;">SET A (Default)</div>
+      
+      <div id="set-a" class="instruction-group">
+        <div class="instruction">👆 <b>1:</b> Heart</div>
+        <div class="instruction">✌️ <b>2:</b> Saturn</div>
+        <div class="instruction">🤟 <b>3:</b> Flower</div>
+        <div class="instruction">🖖 <b>4:</b> Fireworks</div>
+        <div class="instruction">✋ <b>5:</b> Sphere</div>
+      </div>
+
+      <div id="set-b" class="instruction-group" style="display:none; color:#ffaa00;">
+        <div class="instruction">👆 <b>1:</b> Helix (DNA)</div>
+        <div class="instruction">✌️ <b>2:</b> Galatic Spiral</div>
+        <div class="instruction">🤟 <b>3:</b> Cube</div>
+        <div class="instruction">🖖 <b>4:</b> Star</div>
+        <div class="instruction">✋ <b>5:</b> Torus</div>
+      </div>
+
+      <div id="set-c" class="instruction-group" style="display:none; color:#ff00ff;">
+        <div class="instruction">👆 <b>1:</b> Pyramid</div>
+        <div class="instruction">✌️ <b>2:</b> Hourglass</div>
+        <div class="instruction">🤟 <b>3:</b> Atom</div>
+        <div class="instruction">🖖 <b>4:</b> Tornado</div>
+        <div class="instruction">✋ <b>5:</b> Möbius Ribbon</div>
+      </div>
+
+      <div id="set-d" class="instruction-group" style="display:none; color:#00ffff;">
+        <div class="instruction">👆 <b>1:</b> Wave</div>
+        <div class="instruction">✌️ <b>2:</b> Seashell</div>
+        <div class="instruction">🤟 <b>3:</b> Cross</div>
+        <div class="instruction">🖖 <b>4:</b> Mushroom</div>
+        <div class="instruction">✋ <b>5:</b> Klein Bottle</div>
+      </div>
+      
+      <div id="set-e" class="instruction-group" style="display:none; color:#aa00ff;">
+        <div class="instruction">👆 <b>1:</b> Knotrix</div>
+        <div class="instruction">✌️ <b>2:</b> Helixor</div>
+        <div class="instruction">🤟 <b>3:</b> Spirava</div>
+        <div class="instruction">🖖 <b>4:</b> Steplon</div>
+        <div class="instruction">✋ <b>5:</b> Cellorb</div>
+      </div>
+
+      <div id="set-f" class="instruction-group" style="display:none; color:#00ff88;">
+        <div class="instruction">👆 <b>1:</b> Petalux</div>
+        <div class="instruction">✌️ <b>2:</b> Dualis</div>
+        <div class="instruction">🤟 <b>3:</b> QuadraFold</div>
+        <div class="instruction">🖖 <b>4:</b> Spikron</div>
+        <div class="instruction">✋ <b>5:</b> Trion Loop</div>
+      </div>
+
+      <div id="set-g" class="instruction-group" style="display:none; color:#ffcc00;">
+        <div class="instruction">👆 <b>1:</b> Hollowx</div>
+        <div class="instruction">✌️ <b>2:</b> Twirlon</div>
+        <div class="instruction">🤟 <b>3:</b> VoidSphere</div>
+        <div class="instruction">🖖 <b>4:</b> HexaBloom</div>
+        <div class="instruction">✋ <b>5:</b> FrameX</div>
+      </div>
+
+      <div id="set-h" class="instruction-group" style="display:none; color:#ff00aa;">
+        <div class="instruction">👆 <b>1:</b> PolyNest</div>
+        <div class="instruction">✌️ <b>2:</b> Icoshard</div>
+        <div class="instruction">🤟 <b>3:</b> Orbitalis</div>
+        <div class="instruction">🖖 <b>4:</b> Starlock</div>
+        <div class="instruction">✋ <b>5:</b> WebCore</div>
+      </div>
+
+      <div id="set-i" class="instruction-group" style="display:none; color:#00aaff;">
+        <div class="instruction">👆 <b>1:</b> Flexahedron</div>
+        <div class="instruction">✌️ <b>2:</b> TriNova</div>
+        <div class="instruction">🤟 <b>3:</b> Gridon</div>
+        <div class="instruction">🖖 <b>4:</b> VoidCube</div>
+        <div class="instruction">✋ <b>5:</b> Perforon</div>
+      </div>
+
+      <div id="set-j" class="instruction-group" style="display:none; color:#ffffff;">
+        <div class="instruction">👆 <b>1:</b> NetSphere</div>
+        <div class="instruction">✌️ <b>2:</b> Gyronex</div>
+        <div class="instruction">🤟 <b>3:</b> PulseOrb</div>
+        <div class="instruction">🖖 <b>4:</b> Cageon</div>
+        <div class="instruction">✋ <b>5:</b> MonoCore</div>
+      </div>
+
+      <div id="set-k" class="instruction-group" style="display:none; color:#ffdddd;">
+        <div class="instruction">👆 <b>1:</b> StarVault</div>
+        <div class="instruction">✌️ <b>2:</b> Facetron</div>
+        <div class="instruction">🤟 <b>3:</b> SoftTess</div>
+        <div class="instruction">🖖 <b>4:</b> ScaleSphere</div>
+        <div class="instruction">✋ <b>5:</b> TriFold</div>
+      </div>
+
+      <div id="set-l" class="instruction-group" style="display:none; color:#ddffdd;">
+        <div class="instruction">👆 <b>1:</b> CellLock</div>
+        <div class="instruction">✌️ <b>2:</b> PolyMelt</div>
+        <div class="instruction">🤟 <b>3:</b> NetCube</div>
+        <div class="instruction">🖖 <b>4:</b> RippleCore</div>
+        <div class="instruction">✋ <b>5:</b> GlyphOrb</div>
+      </div>
+
+      <div id="set-m" class="instruction-group" style="display:none; color:#ddddff;">
+        <div class="instruction">👆 <b>1:</b> GeoWeave</div>
+        <div class="instruction">✌️ <b>2:</b> ShardBloom</div>
+        <div class="instruction">🤟 <b>3:</b> FlowNode</div>
+        <div class="instruction">🖖 <b>4:</b> VoidMesh</div>
+        <div class="instruction">✋ <b>5:</b> Crystalon</div>
+      </div>
+
+      <div id="set-n" class="instruction-group" style="display:none; color:#ffffdd;">
+        <div class="instruction">👆 <b>1:</b> LockSphere</div>
+        <div class="instruction">✌️ <b>2:</b> HexaPod</div>
+        <div class="instruction">🤟 <b>3:</b> Orbitron</div>
+        <div class="instruction">🖖 <b>4:</b> StarPlate</div>
+        <div class="instruction">✋ <b>5:</b> Brainyx</div>
+      </div>
+
+      <div id="set-o" class="instruction-group" style="display:none; color:#ddffff;">
+        <div class="instruction">👆 <b>1:</b> AeroShell</div>
+        <div class="instruction">✌️ <b>2:</b> WireStar</div>
+        <div class="instruction">🤟 <b>3:</b> TriLoop</div>
+        <div class="instruction">🖖 <b>4:</b> WarpGrid</div>
+        <div class="instruction">✋ <b>5:</b> NanoBloom</div>
+      </div>
+
+      <div id="set-p" class="instruction-group" style="display:none; color:#ffddff;">
+        <div class="instruction">👆 <b>1:</b> Crescenta</div>
+        <div class="instruction">✌️ <b>2:</b> SolarCell</div>
+        <div class="instruction">🤟 <b>3:</b> GeoPetal</div>
+        <div class="instruction">🖖 <b>4:</b> LinkCore</div>
+        <div class="instruction">✋ <b>5:</b> FluxRing</div>
+      </div>
+
+      <div id="set-q" class="instruction-group" style="display:none; color:#bf00ff;">
+        <div class="instruction">👆 <b>1:</b> QuantaField</div>
+        <div class="instruction">✌️ <b>2:</b> StringVibe</div>
+        <div class="instruction">🤟 <b>3:</b> SuperPos</div>
+        <div class="instruction">🖖 <b>4:</b> Entangle</div>
+        <div class="instruction">✋ <b>5:</b> ProbCloud</div>
+      </div>
+
+      <div id="set-r" class="instruction-group" style="display:none; color:#00ff44;">
+        <div class="instruction">👆 <b>1:</b> PixelBit</div>
+        <div class="instruction">✌️ <b>2:</b> VoxelStar</div>
+        <div class="instruction">🤟 <b>3:</b> Invader</div>
+        <div class="instruction">🖖 <b>4:</b> PacWaka</div>
+        <div class="instruction">✋ <b>5:</b> TetraL</div>
+      </div>
+
+      <div id="set-s" class="instruction-group" style="display:none; color:#ffaa00;">
+        <div class="instruction">👆 <b>1:</b> HelixDNA</div>
+        <div class="instruction">✌️ <b>2:</b> Spiralo</div>
+        <div class="instruction">🤟 <b>3:</b> Tornadox</div>
+        <div class="instruction">🖖 <b>4:</b> Nautilus</div>
+        <div class="instruction">✋ <b>5:</b> Vortex</div>
+      </div>
+
+      <div id="set-t" class="instruction-group" style="display:none; color:#8b4513;">
+        <div class="instruction">👆 <b>1:</b> Mountain</div>
+        <div class="instruction">✌️ <b>2:</b> Canyon</div>
+        <div class="instruction">🤟 <b>3:</b> Plateau</div>
+        <div class="instruction">🖖 <b>4:</b> Dune</div>
+        <div class="instruction">✋ <b>5:</b> Volcano</div>
+      </div>
+
+      <div id="set-u" class="instruction-group" style="display:none; color:#00ced1;">
+        <div class="instruction">👆 <b>1:</b> JellyDome</div>
+        <div class="instruction">✌️ <b>2:</b> CoralTree</div>
+        <div class="instruction">🤟 <b>3:</b> StarFish</div>
+        <div class="instruction">🖖 <b>4:</b> ShellSpiral</div>
+        <div class="instruction">✋ <b>5:</b> FinWave</div>
+      </div>
+
+      <div id="set-v" class="instruction-group" style="display:none; color:#ff4500;">
+        <div class="instruction">👆 <b>1:</b> LavaFlow</div>
+        <div class="instruction">✌️ <b>2:</b> MagmaOrb</div>
+        <div class="instruction">🤟 <b>3:</b> AshPuff</div>
+        <div class="instruction">🖖 <b>4:</b> PyroClast</div>
+        <div class="instruction">✋ <b>5:</b> Ember</div>
+      </div>
+
+      <div id="set-w" class="instruction-group" style="display:none; color:#b0c4de;">
+        <div class="instruction">👆 <b>1:</b> Thunder</div>
+        <div class="instruction">✌️ <b>2:</b> RainSheet</div>
+        <div class="instruction">🤟 <b>3:</b> SnowFlake</div>
+        <div class="instruction">🖖 <b>4:</b> Cloud</div>
+        <div class="instruction">✋ <b>5:</b> Hail</div>
+      </div>
+
+      <div id="set-x" class="instruction-group" style="display:none; color:#39ff14;">
+        <div class="instruction">👆 <b>1:</b> AlienPod</div>
+        <div class="instruction">✌️ <b>2:</b> BioShip</div>
+        <div class="instruction">🤟 <b>3:</b> XenoSpine</div>
+        <div class="instruction">🖖 <b>4:</b> HiveNode</div>
+        <div class="instruction">✋ <b>5:</b> Plasma</div>
+      </div>
+
+      <div id="set-y" class="instruction-group" style="display:none; color:#aaaaaa;">
+        <div class="instruction">👆 <b>1:</b> DualOrb</div>
+        <div class="instruction">✌️ <b>2:</b> Balance</div>
+        <div class="instruction">🤟 <b>3:</b> Taijitu</div>
+        <div class="instruction">🖖 <b>4:</b> Mirror</div>
+        <div class="instruction">✋ <b>5:</b> TwinFlame</div>
+      </div>
+
+      <div id="set-z" class="instruction-group" style="display:none; color:#ffd700;">
+        <div class="instruction">👆 <b>1:</b> Omega</div>
+        <div class="instruction">✌️ <b>2:</b> Singular</div>
+        <div class="instruction">🤟 <b>3:</b> Alpha</div>
+        <div class="instruction">🖖 <b>4:</b> Final</div>
+        <div class="instruction">✋ <b>5:</b> Zero</div>
+      </div>
+
+      
+      <div id="set-controls" style="margin-top: 15px; text-align: center; display: flex; justify-content: space-between; gap: 5px;">
+        <button id="btn-prev-set" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid #444; padding: 8px 12px; cursor: pointer; border-radius: 4px; font-family: inherit; flex: 1;">&lt; Prev</button>
+        <button id="btn-next-set" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid #444; padding: 8px 12px; cursor: pointer; border-radius: 4px; font-family: inherit; flex: 1;">Next &gt;</button>
+      </div>
+
+    </div>
+
+    <div id="video-container">
+      <video id="input-video" playsinline></video>
+    </div>
+    
+    <!-- Camera Toggle Button -->
+    <button id="btn-toggle-camera">Hide Camera</button>
+
+    <!-- Help Button -->
+    <button id="btn-help" style="position:fixed; bottom:20px; right:20px; z-index:100; background: rgba(0, 0, 0, 0.5); color: #00d2ff; border: 1px solid #333; padding: 10px 15px; border-radius: 5px; cursor: pointer; backdrop-filter: blur(5px); font-size:16px;">
+        ? How To Play
+    </button>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span id="close-help" class="close-btn">&times;</span>
+            <h2>How To Play</h2>
+            
+            <div class="help-section">
+                <h3>1. SHAPE SELECTION</h3>
+                <p><b>Single Hand:</b> Show 1-5 fingers to select a shape.</p>
+                <p><b>Dual Hand:</b> Show the SAME number of fingers on BOTH hands.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>2. MANUAL ROTATION</h3>
+                <p>1. Make a <b>FIST</b> with ONE hand.</p>
+                <p>2. Use your <b>OTHER hand</b> to rotate the object.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>3. ZOOM CONTROL</h3>
+                <p>Use <b>Both hands</b> to Select a Shape.</p>
+                <p>Move <b>APART</b> to Zoom Out.</p>
+                <p>Move <b>TOGETHER</b> to Zoom In.</p>
+            </div>
+            
+             <div class="help-section">
+                <h3>4. TIPS</h3>
+                <p>Ensure your hand is clearly visible and well-lit.</p>
+            </div>
+        </div>
+    </div>
+
+    <button id="sidebar-toggle">☰</button>
+  <div id="sidebar">
+      <div id="sidebar-content">
+          <h2>Nav System</h2>
+          <input type="text" id="search-shapes" placeholder="Search Sets/Shapes...">
+          <div id="set-list"></div>
+      </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

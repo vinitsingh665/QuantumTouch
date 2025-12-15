@@ -1,0 +1,530 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: #000;
+  font-family: sans-serif;
+}
+canvas {
+  display: block;
+}
+#video-container {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 200px;
+  height: 150px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 10;
+  transform: scaleX(-1); /* Mirror the video preview */
+}
+#input-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#ui {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 15px;
+  border-radius: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+h1 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  color: #00d2ff;
+}
+.instruction {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+#loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #00d2ff;
+  font-size: 2rem;
+  font-weight: bold;
+  text-shadow: 0 0 20px #00d2ff;
+  transition: opacity 0.5s;
+}
+
+#btn-prev-set, #btn-next-set {
+  pointer-events: auto;
+}
+
+#btn-toggle-camera {
+    position: fixed;
+    bottom: 180px; /* Above the video container (height 150 + 20 + 10 gap) */
+    left: 20px;
+    z-index: 100;
+    font-size: 14px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    color: #00d2ff;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+#btn-toggle-camera:hover {
+    background: rgba(0, 210, 255, 0.2);
+    box-shadow: 0 0 10px #00d2ff;
+}
+
+/* Sidebar Styles */
+#sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    font-size: 24px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    color: #00d2ff;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+#sidebar-toggle:hover {
+    background: rgba(0, 210, 255, 0.2);
+    box-shadow: 0 0 10px #00d2ff;
+}
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Hidden by default */
+    width: 280px;
+    height: 100%;
+    background: rgba(10, 10, 15, 0.85); /* Dark glass */
+    backdrop-filter: blur(15px);
+    border-left: 1px solid #333;
+    z-index: 90;
+    transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar.active {
+    right: 0;
+}
+
+#sidebar-content {
+    padding: 20px;
+    margin-top: 60px; /* Space for toggle */
+    overflow-y: auto;
+    height: 100%;
+}
+
+#sidebar-content h2 {
+    color: #00d2ff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+#search-shapes {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+#search-shapes:focus {
+    outline: none;
+    border-color: #00d2ff;
+    box-shadow: 0 0 5px rgba(0, 210, 255, 0.3);
+}
+
+.set-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    display: flex;
+    flex-direction: column;
+    color: #eee;
+}
+
+/* Category Styles */
+.category-container {
+    margin-bottom: 20px;
+}
+
+.category-title {
+    font-size: 0.9rem;
+    color: #00d2ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.category-title:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.category-arrow {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.category-container.open .category-arrow {
+    transform: rotate(180deg);
+}
+
+.category-content {
+    display: none;
+    padding-left: 5px;
+}
+
+.category-container.open .category-content {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.set-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
+}
+
+.set-item.active {
+    background: rgba(0, 210, 255, 0.1);
+    border-left: 3px solid #00d2ff;
+}
+
+.set-header {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.set-indicator-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.shape-tags {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 5px;
+    line-height: 1.3;
+}
+
+/* Scrollbar */
+#sidebar-content::-webkit-scrollbar {
+    width: 6px;
+}
+#sidebar-content::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.3);
+}
+#sidebar-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+#sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: #00d2ff;
+}
+
+/* Help Modal Styles */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 200; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent body scroll */
+    background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s;
+    /* Flex to center vertically and horizontally */
+    display: none; /* Overridden by JS to flex/block */
+    /* Note: JS sets display: block usually, we should change JS or make this work with block. 
+       Better to use flex on the overlay to center content easily, but JS toggles 'block'/'none'.
+       Let's stick to absolute centering on content or change JS. JS sets display='block'.
+       So we can use flex inside if allow display block.
+       Actually, if JS sets display='block', we can still use flex if we change the class rule,
+       BUT JS overrides element.style.display. 
+       So, let's keep overlay block, and center content with transform.
+    */
+}
+
+/* Force Flex for centering when JS sets display: block? No, JS sets inline style. 
+   We will rely on absolute positioning for the content to center it perfectly. */
+
+.modal-content {
+    background: rgba(20, 20, 30, 0.95);
+    position: fixed; /* Absolute/Fixed centering */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0; /* Remove old margin */
+    padding: 25px;
+    border: 1px solid #00d2ff;
+    width: 90%; 
+    max-width: 700px; /* Slightly wider to fit side-by-side */
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    color: #eee;
+    animation: slideIn 0.3s;
+    
+    /* Grid layout for content */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Make title span full width */
+.modal-content h2 {
+    grid-column: 1 / -1;
+    margin-top: 0;
+    color: #00d2ff;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0} 
+    to {opacity: 1}
+}
+
+@keyframes slideIn {
+    from {transform: translate(-50%, -60%); opacity: 0;}
+    to {transform: translate(-50%, -50%); opacity: 1;}
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #00d2ff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.help-section {
+    margin-bottom: 0px; /* Grid handles gap */
+    padding-bottom: 0px;
+    border-bottom: none; /* Remove dividers for grid look */
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 8px;
+    height: 100%; /* Fill grid cell */
+    box-sizing: border-box;
+}
+
+/* Make specific sections span full width on small screens if needed, 
+   but for now let's make Shape selection span 2 rows? No, just flow. */
+
+/* Explicitly target sections to arrange them nicely in grid */
+.help-section:nth-of-type(1) { /* Shape Selection */
+    grid-column: 1 / -1; /* Full width */
+}
+
+.help-section h3 {
+    color: #00d2ff;
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.help-section p {
+    margin: 4px 0;
+    line-height: 1.4;
+    color: #ddd;
+    font-size: 0.9rem;
+}
+
+.help-section b {
+    color: #fff;
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 600px) {
+    .modal-content {
+        grid-template-columns: 1fr;
+        max-width: 95%;
+        padding: 15px;
+    }
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS OVERRIDES
+   ========================================= */
+@media screen and (max-width: 600px) {
+    /* UI Container - 100% Transparent */
+    #ui {
+        width: auto;
+        left: 10px;
+        right: 10px;
+        top: 60px; 
+        box-sizing: border-box;
+        font-size: 0.9rem;
+        padding: 5px;
+        max-width: none;
+        pointer-events: none;
+        background: transparent !important; /* Fully transparent */
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    /* Ensure buttons inside UI are clickable */
+    #ui button {
+        pointer-events: auto;
+    }
+
+    h1 {
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    /* Set Controls - Micro Fixed Bottom Bar */
+    #set-controls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 10px;
+        background: rgba(10, 10, 15, 0.95);
+        border-top: 1px solid #333;
+        z-index: 1000;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px !important;
+        height: 36px; /* Micro Height */
+        align-items: center;
+    }
+
+    /* Video Container - Moved up */
+    #video-container {
+        width: 90px;
+        height: 68px;
+        bottom: 45px; 
+        left: 5px;
+    }
+    
+    /* Camera Toggle */
+    #btn-toggle-camera {
+        bottom: 120px;
+        left: 5px;
+        font-size: 10px;
+        padding: 4px 6px;
+    }
+
+    /* Help Button */
+    #btn-help {
+        bottom: 45px;
+        right: 5px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    /* Sidebar - Full Surface */
+    #sidebar {
+        width: 85%;
+        max-width: 300px;
+    }
+
+    #sidebar-toggle {
+        font-size: 18px;
+        padding: 6px 10px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    /* Loading text size */
+    #loading {
+        font-size: 1.2rem;
+        width: 90%;
+        text-align: center;
+    }
+    
+    /* Micro Browser-Style Buttons */
+    #btn-prev-set, #btn-next-set {
+        padding: 0 !important; 
+        font-size: 0.8rem !important;
+        font-weight: normal;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid #444 !important;
+        color: #ddd !important;
+        border-radius: 4px !important;
+        box-shadow: none;
+        flex: 1; 
+        height: 28px !important; /* Fixed micro height */
+        min-height: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 !important;
+    }
+    
+    #btn-prev-set:active, #btn-next-set:active {
+        background: rgba(0, 210, 255, 0.3) !important;
+        transform: translateY(2px);
+    }
+}
